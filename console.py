@@ -125,29 +125,29 @@ class HBNBCommand(cmd.Cmd):
             if class_name not in HBNBCommand.classes:
                 raise NameError()
             params_dict = {}
+            new_instance = HBNBCommand.classes[class_name]()
 
             for i in params:
-                key_value = param.split('=')
+                key_value = i.split('=')
                 if len(key_value) == 2:
                     key, value = key_value
                 if value[0] == '"':
-                    procesed_value = value[1:-1].replace("_", " ").replace('\\"','"')
-                elif '.' in value:
-                    try:
-                        procesed_value = float(value)
-                    except (SyntaxError, NameError):
-                        continue
+                    procesed_value = value[1:-1].replace("_", " ").replace("\"",r"\"")
                 else:
                     try:
-                        procesed_value = int(value)
+                        if '.' in value:
+                            procesed_value = float(procesed_value)
+                        else:
+                            procesed_value = int(value)
                     except ValueError:
                         continue
 
                 params_dict[key] = procesed_value
-
-            new_instance = HBNBCommand.classes[class_name](**params_dict)
+                setattr(new_instance, key, params_dict[key])
+            
+            storage.new(new_instance)
             storage.save()
-            storage.save()
+            print(new_instance.id)
 
         except SyntaxError:
             print("** class name missing **")
