@@ -59,5 +59,11 @@ class FileStorage:
         """delete obj from __objects"""
         if (obj is None):
             return
-        if (obj):
-            del(obj)
+
+        key = obj.__class__.__name__ + '.' + obj.id
+
+        try:
+            del(self.all()[key])
+            self.save()
+        except KeyError:
+            print("** no instance found **")
